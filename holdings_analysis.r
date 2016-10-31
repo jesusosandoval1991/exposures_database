@@ -1,11 +1,12 @@
 #This is the filename in Windows  filename <- "C:\\Users\\sandovaj.AUTH\\Desktop\\db_holdings.csv"
 #This is the filename in Mac 
- filename <- "/Users/jesussandoval/Desktop/holdings_analysis/db_holdings.csv" 
+filename <- "/Users/jesussandoval/Desktop/holdings_analysis/db_holdings.csv" 
 
 holdings <- read.csv(filename,header=TRUE,sep=",")
 
-#I want to fix the columns so that I can use SQl to drive the analysis colnames(holdings) <-
-gsub('[.]','',colnames(holdings)) holdings$AsofDate <- as.Date(holdings$AsofDate,format="%m/%d/%Y")
+#I want to fix the columns so that I can use SQl to drive the analysis 
+colnames(holdings) <- gsub('[.]','',colnames(holdings)) 
+holdings$AsofDate <- as.Date(holdings$AsofDate,format="%m/%d/%Y")
 
 #What's the market value of Indonesian bonds and equities?
 
@@ -55,36 +56,34 @@ _country_equity_exposure.csv")
 #Which fixed income strategies possess investments to that country and how much?
 
 country_exposure_fi_manager <- sqldf("select AsofDate, SourceAccountName, CountryofDomicileName,
-AssetTypeCategory, sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where
-CountryofDomicileName = 'Indonesia' and AssetTypeCategory ='FIXED INCOME SECURITIES' group by
-AsofDate,SourceAccountName order by SourceAccountName,AsofDate")
+	AssetTypeCategory, sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where
+	CountryofDomicileName = 'Indonesia' and AssetTypeCategory ='FIXED INCOME SECURITIES' group by
+	AsofDate,SourceAccountName order by SourceAccountName,AsofDate")
 
-write.csv(country_exposure_fi_manager,
-"~/Desktop/holdings_analysis/manager_country_fi_exposure.csv")
+write.csv(country_exposure_fi_manager,"~/Desktop/holdings_analysis/manager_country_fi_exposure.csv")
 
 #If there is public equity exposure to this country, how much is attributed to particular sectors?
 
 equity_sector_exposure <- sqldf("select AsofDate, CountryofDomicileName, GICSSectorName,
-sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where CountryofDomicileName =
-'Indonesia' and AssetTypeCategory ='EQUITY' group by AsofDate, GICSSectorName order by
-GICSSectorName,AsofDate")
+	sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where CountryofDomicileName =
+	'Indonesia' and AssetTypeCategory ='EQUITY' group by AsofDate, GICSSectorName order by
+	GICSSectorName,AsofDate")
 
 write.csv(equity_sector_exposure,"~/Desktop/holdings_analysis/equity_s ector_ex posure.csv")
 
 #If there is fixed income exposure to this country, how much is attributed to particular industries?
 
 fi_sector_exposure <- sqldf("select AsofDate, CountryofDomicileName, BloombergIndustrySector,
-sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where CountryofDomicileName =
-'Indonesia' and AssetTypeCategory ='FIXED INCOME SECURITIES' group by AsofDate,
-BloombergIndustrySector order by BloombergIndustrySector,AsofDate")
+	sum(MarketValue) tot_mkt_val, sum(Units) tot_units from holdings where CountryofDomicileName =
+	'Indonesia' and AssetTypeCategory ='FIXED INCOME SECURITIES' group by AsofDate,
+	BloombergIndustrySector order by BloombergIndustrySector,AsofDate")
 
 write.csv(fi_sector_exposure,"~/Desktop/holdings_analysis/fi_sector_ex posure.c sv")
 
 #Helper function to get percents percent <- function(x, digits = 2, format = "f", ...) {
 paste0(formatC(100 * x, format = format, digits = digits, ...), "%") }
 
-#High level overview of what's happening to a particular sector or country, Info and Tech in this
-#case
+#High level overview of what's happening to a particular sector or country, Info and Tech in this case
 
 analyze_changes <- function(x) {          
 	count <- 1 
