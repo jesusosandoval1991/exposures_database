@@ -80,8 +80,10 @@ fi_sector_exposure <- sqldf("select AsofDate, CountryofDomicileName, BloombergIn
 
 write.csv(fi_sector_exposure,"~/Desktop/holdings_analysis/fi_sector_ex posure.c sv")
 
-#Helper function to get percents percent <- function(x, digits = 2, format = "f", ...) {
-paste0(formatC(100 * x, format = format, digits = digits, ...), "%") }
+#Helper function to get percents 
+percent <- function(x, digits = 2, format = "f", ...) {
+	paste0(formatC(100 * x, format = format, digits = digits, ...), "%") 
+}
 
 #High level overview of what's happening to a particular sector or country, Info and Tech in this case
 
